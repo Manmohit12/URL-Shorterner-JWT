@@ -32,11 +32,13 @@ async function handleUserLogin(req, res) {
                 error:'Invalid username and password'
             });
         }
-        const sessionId = uuidv4(); 
-        setUser(sessionId,user);
-        //uid iska naam ha
-        res.cookie("uid",sessionId)
-        return res.redirect("/")
+
+      // Convert user document to plain object before signing
+      const userPayload = user.toObject ? user.toObject() : user;
+      const token = setUser(userPayload);
+      // Set cookie with name 'uid' and token as value
+      res.cookie('uid', token, { httpOnly: true, maxAge: 24 * 60 * 60 * 1000 }); // 1 day expiry
+      return res.redirect("/")
     } catch (error) {
         console.error('Signup Error:', error);
         return res.status(500).send('Something went wrong during signup.');
