@@ -14,7 +14,7 @@ async function handleGenerateNewShortURL(req,res){
     })
     return res.render("home",{
         id:shortID,
-    })
+    })  
  
 }
 
@@ -23,6 +23,9 @@ async function handleGetAnalytics(req,res){
     const result = await URL.findOne({
         shortId
     });
+    if (!result) {
+        return res.status(404).json({ error: "URL not found" });
+    }
     return res.json({ 
         totalClicks:result.visitHistory.length,
         analytics:result.visitHistory,
