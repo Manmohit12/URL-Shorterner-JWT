@@ -1,6 +1,5 @@
 import User from '../models/user.js';
-import { v4 as uuidv4 } from 'uuid';
-import {setUser} from '../service/auth.js'
+import { setUser } from '../service/auth.js'
 
 async function handleUserSignup(req, res) {
     try {
@@ -26,19 +25,20 @@ async function handleUserSignup(req, res) {
 async function handleUserLogin(req, res) {
     try {
         const { email, password } = req.body;
-        const user =await User.findOne({email,password})
-        if(!user){
-            return res.render("login",{
-                error:'Invalid username and password'
+        const user = await User.findOne({ email, password })
+        if (!user) {
+            return res.render("login", {
+                error: 'Invalid username and password'
             });
         }
 
-      // Convert user document to plain object before signing
-      const userPayload = user.toObject ? user.toObject() : user;
-      const token = setUser(userPayload);
-      // Set cookie with name 'uid' and token as value
-      res.cookie('uid', token, { httpOnly: true, maxAge: 24 * 60 * 60 * 1000 }); // 1 day expiry
-      return res.redirect("/")
+        // Convert user document to plain object before signing
+        const userPayload = user.toObject ? user.toObject() : user;
+        const token = setUser(userPayload); 
+        console.log(userPayload);
+        // Set cookie with name 'uid' and token as value
+        res.cookie('uid', token, { httpOnly: true, maxAge: 24 * 60 * 60 * 1000 }); // 1 day expiry
+        return res.redirect("/")
     } catch (error) {
         console.error('Signup Error:', error);
         return res.status(500).send('Something went wrong during signup.');
